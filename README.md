@@ -199,6 +199,37 @@ parameter.setSuPath("/system/xbin/su");
 SerialHelper.getInstance().serialStart(parameter);
 ```
 
+* 关闭串口
+
+```Java
+SerialHelper.getInstance().close();
+```
+
+
+
+* 获取串口设备
+
+```Java
+SerialHelper.getInstance().getAllSerialDevices();
+```
+
+
+
+* 获取串口设备地址
+
+```Java
+SerialHelper.getInstance().getAllSerialDevicesPath();
+```
+
+
+
+* 查看日志
+
+```Java
+parameter.setDebug(true);
+```
+
+
 
 
 
@@ -207,6 +238,7 @@ SerialHelper.getInstance().serialStart(parameter);
 
 | 属性			|说明			 |
 | ------------- |  :-------------|
+| debug      			|	是否显示log		|
 | suPath      			|	权限地址		|
 | baudrate        |   波特率		|
 | serialPath 		|	串口地址		|
