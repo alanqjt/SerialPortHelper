@@ -301,7 +301,11 @@ parameter.setDebug(true);
 
 
 
-
+[味都好-味都好智能售餐机](https://mp.weixin.qq.com/s/UUXSAPc5nk0tR5qW3nN03Q)
+<br></br>
+智能售餐机
+<br></br>
+<img src="img/im9.jpg" width="360">
 
 
 
