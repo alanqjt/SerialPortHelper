@@ -16,7 +16,7 @@
         android:focusableInTouchMode="true"
         android:scrollbars="vertical"
         android:text="发送信息:"
-        android:textSize="15sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/textReceived"
@@ -26,8 +26,8 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:scrollbars="vertical"
-        android:text="接受信息:"
-        android:textSize="15sp" />
+        android:text="接收信息:"
+        android:textSize="20sp" />
 
 
 </LinearLayout>

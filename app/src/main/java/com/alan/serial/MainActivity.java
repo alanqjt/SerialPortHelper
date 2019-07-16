@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
         textSend.setMovementMethod(ScrollingMovementMethod.getInstance());
         textReceived.setMovementMethod(ScrollingMovementMethod.getInstance());
 //        modelByFixed();
-//        modelByVariable();
-        modelByVariable2();
+        modelByVariable();
+//        modelByVariable2();
     }
 
     private void modelByFixed() {
@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         List<Integer> protocolHead = new ArrayList<>();
         protocolHead.add(0xE1);
+
         Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Parameter.PROTOCOLMODEL_FIXED, new OnSerialPortDataListener() {
             @Override
             public void onDataReceived(byte[] bytes, int length, String hexData) {
@@ -57,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
         byte[] p = {0x55, 1, 1, 0, 1, 0, 1, 0};
         SerialHelper.getInstance().serialStart(parameter);
         SerialHelper.getInstance().sendData(p);
+
+        SerialHelper.getInstance().getAllSerialDevices();
+        SerialHelper.getInstance().getAllSerialDevicesPath();
     }
 
 
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         parameter.setProLenIndex(1);
-        parameter.setUselessLength(0);
+        parameter.setDebug(true);
         byte[] p = {0x55, 1, 1, 0, 1, 0, 1, 0};
         SerialHelper.getInstance().serialStart(parameter);
         SerialHelper.getInstance().sendData(p);
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         //请在串口调试助手发送E1 05 8A 01 01 00 01 08 EF
         List<Integer> protocolHead = new ArrayList<>();
         protocolHead.add(0xE1);
+        protocolHead.add(0x55);
         Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Parameter.PROTOCOLMODEL_VARIABLE, new OnSerialPortDataListener() {
             @Override
             public void onDataReceived(byte[] bytes, int length, String hexData) {

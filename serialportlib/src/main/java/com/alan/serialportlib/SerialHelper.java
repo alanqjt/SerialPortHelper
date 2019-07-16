@@ -24,13 +24,24 @@ public class SerialHelper {
     private InputStream inputStream = null;
     private OutputStream outputStream = null;
 
-    public static SerialHelper getInstance() {
+    private boolean ready = false;
+
+    private SerialHelper() {
+    }
+
+    public static synchronized SerialHelper getInstance() {
         if (serialHelper == null)
             serialHelper = new SerialHelper();
         return serialHelper;
     }
 
     public boolean serialStart(Parameter parameter) {
+
+        if (ready) {
+            Log.e(TAG, "SerialHelper is running");
+            return true;
+        }
+
         try {
             serialPort = new SerialPort(new File(parameter.getSerialPath()), parameter.getBaudrate(), 0, parameter.getSuPath());
             outputStream = serialPort.getOutputStream();
@@ -42,8 +53,10 @@ public class SerialHelper {
             readThread.setmInputStreams(inputStream);
             readThread.start();
             writeThread.start();
+            ready = true;
         } catch (IOException e) {
             e.printStackTrace();
+            ready = false;
             return false;
         }
         return true;
@@ -65,6 +78,7 @@ public class SerialHelper {
         serialPort.close();
         writeThread = null;
         readThread = null;
+        ready = false;
         serialHelper = null;
     }
 
