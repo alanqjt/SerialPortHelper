@@ -60,6 +60,10 @@ dependencies {
 
 * 第一种协议固定长度 PROTOCOLMODEL_FIXED
 
+<br></br>
+<img src="img/img4.png" width="720"> 
+
+
 ```Java
 //协议模版
 //请在串口调试助手发送E1 09 8A 01 01 00 01 08 EF
@@ -87,9 +91,13 @@ SerialHelper.getInstance().serialStart(parameter);
 <br></br>
 1.data包含了所要截取的长度
 
+<br></br>
+<img src="img/img2.png" width="720"> 
+
 ```Java
 //协议模版
 //请在串口调试助手发送E1 09 8A 01 01 00 01 08 EF
+//ProLenIndex 所在的下标是1，  值为0x09
 List<Integer> protocolHead = new ArrayList<>();
 protocolHead.add(0xE1);
 Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Parameter.PROTOCOLMODEL_VARIABLE, new OnSerialPortDataListener() {
@@ -103,13 +111,17 @@ Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Paramete
                
     }
 });
-parameter.setProLenIndex(1);
+parameter.setProLenIndex(1);//设置LEN下标
 SerialHelper.getInstance().serialStart(parameter);
 
 ```
 
 <br></br>
 2.data不包含了所要截取的长度，指的是有意义的数据长度
+
+<br></br>
+<img src="img/img3.png" width="720"> 
+
 
 ```Java
 //协议模版
@@ -129,8 +141,8 @@ Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Paramete
                
     }
 });
-parameter.setProLenIndex(1);
-parameter.setUselessLength(4);
+parameter.setProLenIndex(1);//设置LEN下标
+parameter.setUselessLength(4);//除了data有效数据外的长度
 SerialHelper.getInstance().serialStart(parameter);
 ```
 
@@ -261,15 +273,25 @@ parameter.setDebug(true);
 
 效果演示
 ---------
-
+* 并发处理
+<br></br>
+<img src="img/img1.gif" width="720"> 
+<br></br>
+<img src="img/img5.JPG" width="360">  
 
 项目成品
 ---------
+[地心科技-色秀口红机](http://www.gravitytech.com.cn/detail/60.html)
+<br></br>
+<img src="img/img6.JPG" width="360"> 
 
+[云际科技-游云魔盒](http://www.baidu.com)
+<br></br>
+<img src="img/img7.JPG" width="360"> 
 
-
-
-
+[逗买科技-逗买智能售货机](http://www.ecxls.cn/invest.html)
+<br></br>
+<img src="img/img8.JPG" width="360">
 
 
 
