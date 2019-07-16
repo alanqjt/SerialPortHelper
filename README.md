@@ -283,13 +283,19 @@ parameter.setDebug(true);
 ---------
 [地心科技-色秀口红机](http://www.gravitytech.com.cn/detail/60.html)
 <br></br>
+网红口红机
+<br></br>
 <img src="img/img6.JPG" width="360"> 
 
 [云际科技-游云魔盒](http://www.baidu.com)
 <br></br>
+一种游艺设备，支持使用摇杆玩王者荣耀，和各种cocos2d,unity3d游戏。
+<br></br>
 <img src="img/img7.JPG" width="360"> 
 
 [逗买科技-逗买智能售货机](http://www.ecxls.cn/invest.html)
+<br></br>
+弹簧售货机
 <br></br>
 <img src="img/img8.JPG" width="360">
 
