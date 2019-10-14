@@ -41,7 +41,7 @@ allprojects {
 
 ```xml
 dependencies {
-     implementation 'com.github.alanqjt:SerialPortHelper:v1.0.1'
+     implementation 'com.github.alanqjt:SerialPortHelper:v1.0.2'
 }
 ```
 
