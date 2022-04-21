@@ -1,4 +1,7 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.mortalkim'
+// group='com.github.你的github用户名'
 
 android {
     compileSdkVersion 28
