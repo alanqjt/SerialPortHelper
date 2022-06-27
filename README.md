@@ -8,6 +8,14 @@ SerialPortHelper
 [![API](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 
 
+更新预告v2.0（为不兼容更新，更新时间大概在7月份左右）
+---------
+* 取消单例模式，支持同时打开多个串口
+* so以Cmake动态生成，新增支持设置停止位，校验位，数据位...等等扩展参数
+* 新增无协议的串口读写开启（可以理解为串口读到什么就返回什么，不会去做协议的过滤，协议逻辑要自己处理）
+
+
+
 目录
 ====
 * [引入](#引入)
