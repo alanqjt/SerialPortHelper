@@ -26,7 +26,7 @@ public class SerialHelper {
 
     private boolean ready = false;
 
-    private SerialHelper() {
+    public SerialHelper() {
     }
 
     public static synchronized SerialHelper getInstance() {
