@@ -53,84 +53,84 @@ dependencies {
 //    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    archiveClassifier.set('sources')
-}
-
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-//                from components.release
-//                from components.java
-
-
-                groupId = GROUP_ID
-                artifactId = ARTIFACT_ID
-                version = VERSION_BASE_SDK_NAME_MAVEN
-
-//                groupId = 'io.github.alanqjt'
-//                artifactId = 'SerialPortHelper'
-//                version = '2.0.0-SNAPSHOT'
-
-                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-                artifact(sourcesJar) {
-                    classifier "sources"
-                }
-
-
-                pom {
-                    name = 'SerialPortHelper'
-                    description = 'A lightweight and simple Android serial port communication helper.'
-                    url = 'https://github.com/alanqjt/SerialPortHelper'
-
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = '9616b897-ffe8-4fe0-92f2-ce76e05256d8'
-                            name = 'AlanQu'
-                            email = 'alanqjt@163.com'
-                        }
-                    }
-
-                    scm {
-                        connection = 'scm:git:github.com/alanqjt/SerialPortHelper.git'
-                        developerConnection = 'scm:git:ssh://github.com/alanqjt/SerialPortHelper.git'
-                        url = 'https://github.com/alanqjt/SerialPortHelper'
-                    }
-                }
-            }
-        }
-
-        repositories {
-            maven {
-                //https://central.sonatype.org/publish/release/
-                def releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                def snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
-
-                credentials {
-//                    username = project.findProperty("ossrhUsername")
-//                    password = project.findProperty("ossrhPassword")
-
-                    username = project.findProperty("ossrhToken") as String
-                    password = project.findProperty("ossrhTokenPassword") as String
-                }
-            }
-        }
-    }
-
-    signing {
-        sign publishing.publications.release
-    }
-}
+//task sourcesJar(type: Jar) {
+//    from android.sourceSets.main.java.srcDirs
+//    archiveClassifier.set('sources')
+//}
+//
+//
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            release(MavenPublication) {
+////                from components.release
+////                from components.java
+//
+//
+//                groupId = GROUP_ID
+//                artifactId = ARTIFACT_ID
+//                version = VERSION_BASE_SDK_NAME_MAVEN
+//
+////                groupId = 'io.github.alanqjt'
+////                artifactId = 'SerialPortHelper'
+////                version = '2.0.0-SNAPSHOT'
+//
+//                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+//                artifact(sourcesJar) {
+//                    classifier "sources"
+//                }
+//
+//
+//                pom {
+//                    name = 'SerialPortHelper'
+//                    description = 'A lightweight and simple Android serial port communication helper.'
+//                    url = 'https://github.com/alanqjt/SerialPortHelper'
+//
+//                    licenses {
+//                        license {
+//                            name = 'The Apache License, Version 2.0'
+//                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+//                        }
+//                    }
+//
+//                    developers {
+//                        developer {
+//                            id = '9616b897-ffe8-4fe0-92f2-ce76e05256d8'
+//                            name = 'AlanQu'
+//                            email = 'alanqjt@163.com'
+//                        }
+//                    }
+//
+//                    scm {
+//                        connection = 'scm:git:github.com/alanqjt/SerialPortHelper.git'
+//                        developerConnection = 'scm:git:ssh://github.com/alanqjt/SerialPortHelper.git'
+//                        url = 'https://github.com/alanqjt/SerialPortHelper'
+//                    }
+//                }
+//            }
+//        }
+//
+//        repositories {
+//            maven {
+//                //https://central.sonatype.org/publish/release/
+//                def releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+//                def snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+//                url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+//
+//                credentials {
+////                    username = project.findProperty("ossrhUsername")
+////                    password = project.findProperty("ossrhPassword")
+//
+//                    username = project.findProperty("ossrhToken") as String
+//                    password = project.findProperty("ossrhTokenPassword") as String
+//                }
+//            }
+//        }
+//    }
+//
+//    signing {
+//        sign publishing.publications.release
+//    }
+//}
 
 
