@@ -8,7 +8,7 @@ SerialPortHelper
 [![API](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 
 
-2.0版本由于在迁移到maven过程中，Android studio 的 maven-publish 上传一直失败 401， 而使用 maven-central-publish 又会报 Plugin [id: 'maven-central-publish'] was not found in any of the following sources    还在研究中，大伙又解决方法也可以私聊告诉我，[联系方式](#联系方式)，如果想要使用新版的可以将[serialportlib](serialportlib)引入的方式使用。
+2.0版本由于在迁移到maven过程中，Android studio 的 maven-publish 上传一直失败 401， 而使用 maven-central-publish 又会报 Plugin [id: 'maven-central-publish'] was not found in any of the following sources    还在研究中，大伙有解决方法也可以私聊告诉我，[联系方式](#联系方式)，如果想要使用新版的可以将[serialportlib](serialportlib)引入的方式使用。
 ---------
 
 
@@ -340,15 +340,7 @@ parameter.setDebug(true);
 * QQ: 490787193（添加的时候请注明是GitHub）
 <br></br><br></br>
 
-如果你觉得不错，对你有帮助，欢迎点个star，follow，也可以帮忙分享给你更多的朋友，或请我喝杯咖啡，这是给我们最大的动力与支持。有问题或建议可以给我邮件 
----------
 
-
-* 扶贫方式
-<br></br>
-<img src="img/imgwechat.jpg" width="360">
-
-<br></br>
 
 效果演示
 ---------
@@ -385,6 +377,17 @@ parameter.setDebug(true);
 智能售餐机
 <br></br>
 <img src="img/im9.jpg" width="360">
+
+
+如果你觉得不错，对你有帮助，欢迎点个star，follow，也可以帮忙分享给你更多的朋友，或请我喝杯咖啡，这是给我们最大的动力与支持。有问题或建议可以给我邮件
+---------
+
+
+* 扶贫方式
+  <br></br>
+  <img src="img/imgwechat.jpg" width="360">
+
+<br></br>
 
 
 # License
