@@ -9,12 +9,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author qujiantao
+ */
 public class WriteThread extends Thread {
     private OutputStream mOutputStreams;
     private ScheduledExecutorService service1 = null;
     Parameter parameter;
     //队列长度
-    private LinkedBlockingQueue<byte[]> queue;
+    private final LinkedBlockingQueue<byte[]> queue;
 
     int frequency;
 
@@ -54,24 +57,21 @@ public class WriteThread extends Thread {
     public void run() {
         super.run();
         service1 = Executors.newSingleThreadScheduledExecutor();
-        service1.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                byte[] params = queue.poll();
-                if (params != null) {
-                    try {
-                        if (mOutputStreams != null) {
-                            mOutputStreams.write(params);
-                            mOutputStreams.flush();
-                            if (null != parameter.getOnSerialPortDataListener()) {
-                                parameter.getOnSerialPortDataListener().onDataSent(params, params.length, ByteUtils.bytesToHexString(params));
-                            }
-                        } else {
-                            Log.d("SerialHelperWriteThread", "mOutputStreams == null");
+        service1.scheduleWithFixedDelay(() -> {
+            byte[] params = queue.poll();
+            if (params != null) {
+                try {
+                    if (mOutputStreams != null) {
+                        mOutputStreams.write(params);
+                        mOutputStreams.flush();
+                        if (null != parameter.getOnSerialPortDataListener()) {
+                            parameter.getOnSerialPortDataListener().onDataSend(params, params.length, ByteUtils.bytesToHexString(params));
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } else {
+                        Log.d("SerialHelperWriteThread", "mOutputStreams == null");
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }, 20, frequency, TimeUnit.MILLISECONDS);

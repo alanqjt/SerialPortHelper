@@ -2,88 +2,148 @@ package com.alan.serialportlib;
 
 import java.util.List;
 
+import android_serialport_api.STOPB;
+import android_serialport_api.DATAB;
+import android_serialport_api.PARITY;
+import android_serialport_api.FLOWCON;
+
+/**
+ * @author qujiantao
+ */
 public class Parameter {
 
-    //权限地址
-    private String suPath;
-    //波特率
-    private int baudrate;
-    //串口地址
-    private String serialPath;
-    //协议开头
-    private List<Integer> protocolHead;
-    //协议结尾
-    private int protocolEnd;
-    //协议长度
-    private int protocolLength;
-    //协议长度截取的下标   从0开始！！！！！
-    private int proLenIndex;
-    //协议模型
-    private int protocolModel;
+    // 权限地址
+    private final String suPath;
+    // 波特率
+    private final int baudrate;
+    // 串口地址
+    private final String serialPath;
 
-    //除了实际有用的data长度，无用的数据 可能包含 协议头 0xE1，结尾 0xEF，校验 0x08，长度 0x05 等等，因协议而定   E1 05 8A 01 01 00 01 08 EF
-    //data 实际应该是 8A 01 01 00 01    也就是说 这里指的长度是在   proLenIndex  (0x05) 截取后面 5位，
-    //整个数据的长度 应该为 协议头+长度+校验+结尾    4+ 5  = 9   其中的 0x05 data长度 是可变化的     uselessLength= 4;
-    private int uselessLength = 0;
+    // 停止位，默认 B1
+    private final int stopBit;
+    // 数据位，默认 CS8
+    private final int dataBit;
+    // 奇偶校验，默认 NONE
+    private final int parity;
+    // 流控，默认 NONE
+    private final int flowCon;
+    // 打开串口标志位，默认 0
+    private final int flags;
 
-    //固定长度  proLenIndex就没有意义了
+    // 协议开头
+    private final List<Integer> protocolHead;
+    // 协议结尾
+    private final int protocolEnd;
+    // 协议长度
+    private final int protocolLength;
+    // 协议长度截取下标（从0开始）
+    private final int proLenIndex;
+    // 协议模型：固定/可变长度
+    private final int protocolModel;
+    // 无用数据长度
+    private final int uselessLength;
+
+    // 写线程处理速度
+    private final int frequencyBySend;
+    // 读线程处理速度
+    private final int frequencyByReceived;
+
+    // 写队列缓存大小
+    private final int queueSizeBySend;
+    // 读队列缓存大小
+    private final int queueSizeByReceived;
+
+    // 数据监听器
+    private final OnSerialPortDataListener onSerialPortDataListener;
+
+    // 是否打印日志
+    private final boolean debug;
+
+    // 固定长度协议模型常量
     public static final int PROTOCOLMODEL_FIXED = 0;
-    //可变长度   proLenIndex才有意义
+    // 可变长度协议模型常量
     public static final int PROTOCOLMODEL_VARIABLE = 1;
+    // 无协议模型常量
+    public static final int PROTOCOLMODEL_NONE = -1;
 
-    //写线程处理速度  只能大于0
-    private int frequencyBySend;
-
-    //读线程处理速度  只能大于0
-    private int frequencyByReceived;
-
-    //写线程队列缓存长度
-    private int queueSizeBySend;
-
-    //读线程队列缓存长度
-    private int queueSizeByReceived;
-
-    //数据监听
-    private OnSerialPortDataListener onSerialPortDataListener;
-
-    public OnSerialPortDataListener getOnSerialPortDataListener() {
-        return onSerialPortDataListener;
+    // 私有构造函数，由 Builder 构建
+    private Parameter(Builder builder) {
+        this.suPath = builder.suPath;
+        this.baudrate = builder.baudrate;
+        this.serialPath = builder.serialPath;
+        this.stopBit = builder.stopBit;
+        this.dataBit = builder.dataBit;
+        this.parity = builder.parity;
+        this.flowCon = builder.flowCon;
+        this.flags = builder.flags;
+        this.protocolHead = builder.protocolHead;
+        this.protocolEnd = builder.protocolEnd;
+        this.protocolLength = builder.protocolLength;
+        this.proLenIndex = builder.proLenIndex;
+        this.protocolModel = builder.protocolModel;
+        this.uselessLength = builder.uselessLength;
+        this.frequencyBySend = builder.frequencyBySend;
+        this.frequencyByReceived = builder.frequencyByReceived;
+        this.queueSizeBySend = builder.queueSizeBySend;
+        this.queueSizeByReceived = builder.queueSizeByReceived;
+        this.onSerialPortDataListener = builder.onSerialPortDataListener;
+        this.debug = builder.debug;
     }
 
-    //是否打印日志
-    private boolean debug = false;
-
-    public boolean isDebug() {
-        return debug;
+    public String getSuPath() {
+        return suPath;
     }
 
-    public void setDebug(boolean debug) {
-        this.debug = debug;
+    public int getBaudrate() {
+        return baudrate;
     }
 
-    public Parameter(String serialPath, int baudrate, List<Integer> protocolHead, int protocolModel,  OnSerialPortDataListener onSerialPortDataListener) {
-        this.serialPath = serialPath;
-        this.protocolHead = protocolHead;
-        this.protocolModel = protocolModel;
-        this.baudrate = baudrate;
-        this.onSerialPortDataListener = onSerialPortDataListener;
-
+    public String getSerialPath() {
+        return serialPath;
     }
 
-    public void setFrequencyBySend(int frequencyBySend) {
-        this.frequencyBySend = frequencyBySend;
+    public int getStopBit() {
+        return stopBit;
     }
 
-    public void setFrequencyByReceived(int frequencyByReceived) {
-        this.frequencyByReceived = frequencyByReceived;
+    public int getDataBit() {
+        return dataBit;
     }
 
-    public void setQueueSizeBySend(int queueSizeBySend) {
-        this.queueSizeBySend = queueSizeBySend;
+    public int getParity() {
+        return parity;
     }
 
-    public void setQueueSizeByReceived(int queueSizeByReceived) {
-        this.queueSizeByReceived = queueSizeByReceived;
+    public int getFlowCon() {
+        return flowCon;
+    }
+
+    public int getFlags() {
+        return flags;
+    }
+
+    public List<Integer> getProtocolHead() {
+        return protocolHead;
+    }
+
+    public int getProtocolEnd() {
+        return protocolEnd;
+    }
+
+    public int getProtocolLength() {
+        return protocolLength;
+    }
+
+    public int getProLenIndex() {
+        return proLenIndex;
+    }
+
+    public int getProtocolModel() {
+        return protocolModel;
+    }
+
+    public int getUselessLength() {
+        return uselessLength;
     }
 
     public int getFrequencyBySend() {
@@ -102,76 +162,12 @@ public class Parameter {
         return queueSizeByReceived;
     }
 
-    public String getSuPath() {
-        return suPath;
+    public OnSerialPortDataListener getOnSerialPortDataListener() {
+        return onSerialPortDataListener;
     }
 
-    public void setSuPath(String suPath) {
-        this.suPath = suPath;
-    }
-
-    public int getBaudrate() {
-        return baudrate;
-    }
-
-    public void setBaudrate(int baudrate) {
-        this.baudrate = baudrate;
-    }
-
-    public String getSerialPath() {
-        return serialPath;
-    }
-
-    public void setSerialPath(String serialPath) {
-        this.serialPath = serialPath;
-    }
-
-    public List<Integer> getProtocolHead() {
-        return protocolHead;
-    }
-
-    public void setProtocolHead(List<Integer> protocolHead) {
-        this.protocolHead = protocolHead;
-    }
-
-    public int getProtocolEnd() {
-        return protocolEnd;
-    }
-
-    public void setProtocolEnd(int protocolEnd) {
-        this.protocolEnd = protocolEnd;
-    }
-
-    public int getProtocolLength() {
-        return protocolLength;
-    }
-
-    public void setProtocolLength(int protocolLength) {
-        this.protocolLength = protocolLength;
-    }
-
-    public int getProLenIndex() {
-        return proLenIndex;
-    }
-
-    public void setProLenIndex(int proLenIndex) {
-        this.proLenIndex = proLenIndex;
-    }
-
-    public int getUselessLength() {
-        return uselessLength;
-    }
-
-    public void setUselessLength(int uselessLength) {
-        this.uselessLength = uselessLength;
-    }
-
-    public int getProtocolModel() {
-        return protocolModel;
-    }
-
-    public void setProtocolModel(int protocolModel) {
-        this.protocolModel = protocolModel;
+    public boolean isDebug() {
+        return debug;
     }
 
     @Override
@@ -180,6 +176,11 @@ public class Parameter {
                 "suPath='" + suPath + '\'' +
                 ", baudrate=" + baudrate +
                 ", serialPath='" + serialPath + '\'' +
+                ", stopBit=" + stopBit +
+                ", dataBit=" + dataBit +
+                ", parity=" + parity +
+                ", flowCon=" + flowCon +
+                ", flags=" + flags +
                 ", protocolHead=" + protocolHead +
                 ", protocolEnd=" + protocolEnd +
                 ", protocolLength=" + protocolLength +
@@ -193,5 +194,134 @@ public class Parameter {
                 ", onSerialPortDataListener=" + onSerialPortDataListener +
                 ", debug=" + debug +
                 '}';
+    }
+
+    /**
+     * Builder 类用于构建 Parameter 实例
+     */
+    public static class Builder {
+        // 必填字段
+        private final String serialPath;
+        private final int baudrate;
+        private final List<Integer> protocolHead;
+        private final int protocolModel;
+        private final OnSerialPortDataListener onSerialPortDataListener;
+
+        // 可选字段（默认值）
+        private String suPath;
+        private int stopBit = STOPB.B1.getStopBit();
+        private int dataBit = DATAB.CS8.getDataBit();
+        private int parity = PARITY.NONE.getParity();
+        private int flowCon = FLOWCON.NONE.getFlowCon();
+        private int flags = 0;
+        private int protocolEnd;
+        private int protocolLength;
+        private int proLenIndex;
+        private int uselessLength = 0;
+        private int frequencyBySend = 1;
+        private int frequencyByReceived = 1;
+        private int queueSizeBySend = 16;
+        private int queueSizeByReceived = 16;
+        private boolean debug = false;
+
+        /**
+         * 构造 Builder，必须传入关键参数
+         *
+         * @param serialPath               串口路径
+         * @param baudrate                 波特率
+         * @param protocolHead             协议头
+         * @param protocolModel            协议模型（固定/可变）
+         * @param onSerialPortDataListener 数据监听器
+         */
+        public Builder(String serialPath, int baudrate, List<Integer> protocolHead,
+                       int protocolModel, OnSerialPortDataListener onSerialPortDataListener) {
+            this.serialPath = serialPath;
+            this.baudrate = baudrate;
+            this.protocolHead = protocolHead;
+            this.protocolModel = protocolModel;
+            this.onSerialPortDataListener = onSerialPortDataListener;
+        }
+
+        public Builder setSuPath(String suPath) {
+            this.suPath = suPath;
+            return this;
+        }
+
+        public Builder setStopBit(int stopBit) {
+            this.stopBit = stopBit;
+            return this;
+        }
+
+        public Builder setDataBit(int dataBit) {
+            this.dataBit = dataBit;
+            return this;
+        }
+
+        public Builder setParity(int parity) {
+            this.parity = parity;
+            return this;
+        }
+
+        public Builder setFlowCon(int flowCon) {
+            this.flowCon = flowCon;
+            return this;
+        }
+
+        public Builder setFlags(int flags) {
+            this.flags = flags;
+            return this;
+        }
+
+        public Builder setProtocolEnd(int protocolEnd) {
+            this.protocolEnd = protocolEnd;
+            return this;
+        }
+
+        public Builder setProtocolLength(int protocolLength) {
+            this.protocolLength = protocolLength;
+            return this;
+        }
+
+        public Builder setProLenIndex(int proLenIndex) {
+            this.proLenIndex = proLenIndex;
+            return this;
+        }
+
+        public Builder setUselessLength(int uselessLength) {
+            this.uselessLength = uselessLength;
+            return this;
+        }
+
+        public Builder setFrequencyBySend(int frequencyBySend) {
+            this.frequencyBySend = frequencyBySend;
+            return this;
+        }
+
+        public Builder setFrequencyByReceived(int frequencyByReceived) {
+            this.frequencyByReceived = frequencyByReceived;
+            return this;
+        }
+
+        public Builder setQueueSizeBySend(int queueSizeBySend) {
+            this.queueSizeBySend = queueSizeBySend;
+            return this;
+        }
+
+        public Builder setQueueSizeByReceived(int queueSizeByReceived) {
+            this.queueSizeByReceived = queueSizeByReceived;
+            return this;
+        }
+
+        public Builder setDebug(boolean debug) {
+            this.debug = debug;
+            return this;
+        }
+
+        /**
+         * 构建最终的 Parameter 对象
+         */
+        public Parameter build() {
+            return new Parameter(this);
+        }
     }
 }

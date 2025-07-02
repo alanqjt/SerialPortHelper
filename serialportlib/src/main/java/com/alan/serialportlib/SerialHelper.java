@@ -7,15 +7,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import android_serialport_api.DATAB;
+import android_serialport_api.FLOWCON;
+import android_serialport_api.PARITY;
+import android_serialport_api.STOPB;
 import android_serialport_api.SerialPort;
 import android_serialport_api.SerialPortFinder;
 
+/**
+ * @author qujiantao
+ */
 public class SerialHelper {
 
-    private static SerialHelper serialHelper = null;
-
     private SerialPort serialPort;
-
     private WriteThread writeThread;
     private ReadThread readThread;
 
@@ -26,15 +30,6 @@ public class SerialHelper {
 
     private boolean ready = false;
 
-    private SerialHelper() {
-    }
-
-    public static synchronized SerialHelper getInstance() {
-        if (serialHelper == null)
-            serialHelper = new SerialHelper();
-        return serialHelper;
-    }
-
     public boolean serialStart(Parameter parameter) {
 
         if (ready) {
@@ -43,7 +38,7 @@ public class SerialHelper {
         }
 
         try {
-            serialPort = new SerialPort(new File(parameter.getSerialPath()), parameter.getBaudrate(), 0, parameter.getSuPath());
+            serialPort = new SerialPort(new File(parameter.getSerialPath()), parameter.getBaudrate(), parameter.getStopBit(), parameter.getDataBit(), parameter.getParity(), parameter.getFlowCon(), parameter.getFlags(), parameter.getSuPath());
             outputStream = serialPort.getOutputStream();
             inputStream = serialPort.getInputStream();
             writeThread = new WriteThread(parameter);
@@ -79,7 +74,6 @@ public class SerialHelper {
         writeThread = null;
         readThread = null;
         ready = false;
-        serialHelper = null;
     }
 
     public String[] getAllSerialDevices() {

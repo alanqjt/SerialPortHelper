@@ -12,6 +12,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author qujiantao
+ */
 public class ReadThread extends Thread {
 
     public static final String TAG = "SerialHelperReadThread";
@@ -20,9 +23,11 @@ public class ReadThread extends Thread {
     private ScheduledExecutorService service1 = null;
     private ScheduledExecutorService service2 = null;
     Parameter parameter;
-    private LinkedBlockingQueue<byte[]> queue;
+    private final LinkedBlockingQueue<byte[]> queue;
 
     int frequency;
+    int protocolModel;
+    boolean hasProtocol;
 
     public ReadThread(Parameter parameter) {
         this.parameter = parameter;
@@ -31,13 +36,13 @@ public class ReadThread extends Thread {
             size = 100;
         }
         queue = new LinkedBlockingQueue<>(size);
-
+        protocolModel = parameter.getProtocolModel();
+        hasProtocol = protocolModel == Parameter.PROTOCOLMODEL_FIXED || protocolModel == Parameter.PROTOCOLMODEL_VARIABLE;
+        showLog(" 读取模式是否含有协议：" + hasProtocol);
         frequency = parameter.getFrequencyByReceived();
         if (frequency <= 0) {
             frequency = 200;
         }
-
-
     }
 
     protected void setmInputStreams(InputStream mInputStreams) {
@@ -57,39 +62,40 @@ public class ReadThread extends Thread {
     @Override
     public void run() {
         super.run();
-        service1 = Executors.newSingleThreadScheduledExecutor();
-        service1.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                getFullBytes();
-            }
-        }, 20, 20, TimeUnit.MILLISECONDS);
+
+        if (hasProtocol) {
+            service1 = Executors.newSingleThreadScheduledExecutor();
+            service1.scheduleWithFixedDelay(() -> getFullBytes(), 20, 20, TimeUnit.MILLISECONDS);
+        }
 
         service2 = Executors.newSingleThreadScheduledExecutor();
-        service2.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                int size;
-                try {
-                    byte[] buffer = new byte[1024];
-                    if (mInputStreams == null)
-                        return;
-                    size = mInputStreams.read(buffer);
-                    if (size > 0) {
-                        byte[] b = new byte[size];
-                        System.arraycopy(buffer, 0, b, 0, b.length);
-                        try {
-                            queue.put(b);
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        b = null;
-                    } else
-                        showLog("read size is " + size);
-                } catch (IOException e) {
-                    e.printStackTrace();
+        service2.scheduleWithFixedDelay(() -> {
+            int size;
+            try {
+                byte[] buffer = new byte[1024];
+                if (mInputStreams == null) {
+                    return;
                 }
+                size = mInputStreams.read(buffer);
+                if (size > 0) {
+                    byte[] b = new byte[size];
+                    System.arraycopy(buffer, 0, b, 0, b.length);
+                    try {
+                        if (hasProtocol) {
+                            queue.put(b);
+                        } else {
+                            onDataReceived(b);
+                        }
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    b = null;
+                } else {
+                    showLog("read size is " + size);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }, 10, 10, TimeUnit.MILLISECONDS);
     }
@@ -125,9 +131,10 @@ public class ReadThread extends Thread {
                     //下标是在协议头所在的下标开始  再加上截取长度的所在的下标
                     int packageLen;
                     if (parameter.getProtocolModel() == Parameter.PROTOCOLMODEL_VARIABLE)
-                        //数据长度可变模式
+                    //数据长度可变模式
+                    {
                         packageLen = (currBytes[startPos + parameter.getProLenIndex()] & 0xff) + parameter.getUselessLength();
-                    else if (parameter.getProtocolModel() == Parameter.PROTOCOLMODEL_FIXED) {
+                    } else if (parameter.getProtocolModel() == Parameter.PROTOCOLMODEL_FIXED) {
                         //数据长度固定模式
                         packageLen = parameter.getProtocolLength();
                     } else {
@@ -171,13 +178,15 @@ public class ReadThread extends Thread {
                 } else if (startPos != -1) {
                     showLog(Thread.currentThread().getName() + " wait2 " + queue.remove(oneBytes));
                 } else {
-                    if (oneBytes != null)
+                    if (oneBytes != null) {
                         queue.remove(oneBytes);
+                    }
                     baos.reset();
                 }
 
-                if (Thread.interrupted())
+                if (Thread.interrupted()) {
                     break;
+                }
                 //处理速度
                 Thread.sleep(frequency);
             }

@@ -2,17 +2,24 @@ SerialPortHelper
 ========
 
 
-[![](https://img.shields.io/badge/SerialPort-1.0.0-brightgreen.svg)](https://github.com/cepr/android-serialport-api)
+[![](https://img.shields.io/badge/SerialPort-2.0.0-brightgreen.svg)](https://github.com/cepr/android-serialport-api)
 [![](https://jitpack.io/v/alanqjt/SerialPortHelper.svg)](https://jitpack.io/#alanqjt/SerialPortHelper)
 ![](https://travis-ci.org/CymChad/BaseRecyclerViewAdapterHelper.svg?branch=master)
 [![API](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 
 
-更新预告v2.0（为不兼容更新，更新时间大概在7月份左右）
+2.0版本由于在迁移到maven过程中，Android studio 的 maven-publish 上传一直失败 401， 而使用 maven-central-publish 又会报 Plugin [id: 'maven-central-publish'] was not found in any of the following sources    还在研究中，大伙又解决方法也可以私聊告诉我，[联系方式](#联系方式)，如果想要使用新版的可以将[serialportlib](serialportlib)引入的方式使用。
+---------
+
+
+
+更新日志v2.0
 ---------
 * 取消单例模式，支持同时打开多个串口
+* 以建造者模式创建Parameter
 * so以Cmake动态生成，新增支持设置停止位，校验位，数据位...等等扩展参数
-* 新增无协议的串口读写开启（可以理解为串口读到什么就返回什么，不会去做协议的过滤，协议逻辑要自己处理）
+* 新增无协议的串口读写（协议逻辑要自己处理）
+* 修改为maven依赖
 
 
 
@@ -63,13 +70,51 @@ dependencies {
 使用说明
 ---------
 串口协议一般分为两种，第一种为固定长度，第二种为可变长度，而可变长度又分为两种。
-所以此库能帮助您快速适配三种类型的协议,如果还是不能满足开发需求，可以自行修改serialportlib中的ReadThread(兄弟，我也只能帮你到这了)
+所以此库能帮助您快速适配三种类型的协议,如果还是不能满足开发需求，可以使用无协议模式 PROTOCOLMODEL_NONE ，自行处理协议
+
+
+
+<br></br>
+<img src="img/img4.png" width="720">
+
+
+
+
+* 无协议模式 PROTOCOLMODEL_NONE
+
+
+
+```Java
+
+        Parameter parameter = new Parameter.Builder(SERIALPATH, BAUDRATE, null, Parameter.PROTOCOLMODEL_NONE, new OnSerialPortDataListener() {
+            @Override
+            public void onDataReceived(byte[] bytes, int length, String hexData) {
+
+            }
+
+            @Override
+            public void onDataSend(byte[] bytes, int length, String hexData) {
+
+            }
+        }).setDebug(true).build();
+        SerialHelper serialHelper = new SerialHelper();
+        serialHelper.serialStart(parameter);
+        serialHelper.getAllSerialDevices();
+        serialHelper.getAllSerialDevicesPath();
+        serialHelper.sendData("生活不易，井盖叹气".getBytes());
+```
+
+
+
+
+<br></br>
+
 
 
 * 第一种协议固定长度 PROTOCOLMODEL_FIXED
 
 <br></br>
-<img src="img/img4.png" width="720"> 
+<img src="img/img4.png" width="720">
 
 
 ```Java
@@ -96,11 +141,11 @@ SerialHelper.getInstance().serialStart(parameter);
 
 
 * 第二种协议固定长度 PROTOCOLMODEL_VARIABLE
-<br></br>
-1.data包含了所要截取的长度
+  <br></br>
+  1.data包含了所要截取的长度
 
 <br></br>
-<img src="img/img2.png" width="720"> 
+<img src="img/img2.png" width="720">
 
 ```Java
 //协议模版
@@ -122,36 +167,37 @@ Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Paramete
 parameter.setProLenIndex(1);//设置LEN下标
 SerialHelper.getInstance().serialStart(parameter);
 
+
 ```
 
 <br></br>
 2.data不包含了所要截取的长度，指的是有意义的数据长度
 
 <br></br>
-<img src="img/img3.png" width="720"> 
+<img src="img/img3.png" width="720">
 
 
 ```Java
 //协议模版
 //请在串口调试助手发送E1 05 8A 01 01 00 01 08 EF
 //请在串口调试助手发送55 05 8A 01 01 00 01 08 EF
-List<Integer> protocolHead = new ArrayList<>();
-protocolHead.add(0xE1);
-protocolHead.add(0x55);
-Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Parameter.PROTOCOLMODEL_VARIABLE, new OnSerialPortDataListener() {
-    @Override
-    public void onDataReceived(byte[] bytes, int length, String hexData) {
-               
-    }
+        List<Integer> protocolHead = new ArrayList<>();
+        protocolHead.add(0xE1);
+        Parameter parameter = new Parameter.Builder(SERIALPATH, BAUDRATE, protocolHead, Parameter.PROTOCOLMODEL_VARIABLE, new OnSerialPortDataListener() {
+            @Override
+            public void onDataReceived(byte[] bytes, int length, String hexData) {
 
-    @Override
-    public void onDataSent(byte[] bytes, int length, String hexData) {
-               
-    }
-});
-parameter.setProLenIndex(1);//设置LEN下标
-parameter.setUselessLength(4);//除了data有效数据外的长度
-SerialHelper.getInstance().serialStart(parameter);
+            }
+
+            @Override
+            public void onDataSend(byte[] bytes, int length, String hexData) {
+
+            }
+        }).setProLenIndex(1).setDebug(true).build();
+        byte[] p = {0x55, 1, 1, 0, 1, 0, 1, 0};
+        SerialHelper serialHelper = new SerialHelper();
+        serialHelper.serialStart(parameter);
+        serialHelper.sendData(p);
 ```
 
 
@@ -169,17 +215,11 @@ SerialHelper.getInstance().sendData(data);
 List<Integer> protocolHead = new ArrayList<>();
 protocolHead.add(0xE1);
 protocolHead.add(0x55);
-Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Parameter.PROTOCOLMODEL_VARIABLE, new OnSerialPortDataListener() {
-    @Override
-    public void onDataReceived(byte[] bytes, int length, String hexData) {
-               
-    }
 
-    @Override
-    public void onDataSent(byte[] bytes, int length, String hexData) {
-               
-    }
-});
+Parameter parameter = new Parameter.Builder(SERIALPATH, BAUDRATE, protocolHead, Parameter.PROTOCOLMODEL_VARIABLE, this)
+          .setProLenIndex(1)//设置LEN下标
+          .setUselessLength(4)//除了data有效数据外的长度
+          .setDebug(true).build();
 ```
 
 
@@ -216,13 +256,13 @@ parameter.setSuPath("/system/xbin/su");
 * 启动串口
 
 ```Java
-SerialHelper.getInstance().serialStart(parameter);
+serialHelper.serialStart(parameter);
 ```
 
 * 关闭串口
 
 ```Java
-SerialHelper.getInstance().close();
+serialHelper.close();
 ```
 
 
@@ -230,7 +270,7 @@ SerialHelper.getInstance().close();
 * 获取串口设备
 
 ```Java
-SerialHelper.getInstance().getAllSerialDevices();
+serialHelper.getAllSerialDevices();
 ```
 
 
@@ -238,7 +278,7 @@ SerialHelper.getInstance().getAllSerialDevices();
 * 获取串口设备地址
 
 ```Java
-SerialHelper.getInstance().getAllSerialDevicesPath();
+serialHelper.getAllSerialDevicesPath();
 ```
 
 
@@ -260,8 +300,13 @@ parameter.setDebug(true);
 | ------------- |  :-------------|
 | debug      			|	是否显示log		|
 | suPath      			|	权限地址		|
-| baudrate        |   波特率		|
 | serialPath 		|	串口地址		|
+| baudrate        |   	<a href="serialportlib/src/main/java/android_serialport_api/BAUDRATE.java">波特率</a>   |
+| stopBit 		|	    <a href="serialportlib/src/main/java/android_serialport_api/STOPB.java">停止位，默认 B1	</a> 	|
+| dataBit 		|	 <a href="serialportlib/src/main/java/android_serialport_api/DATAB.java">数据位，默认 CS8 	</a> 		|
+| parity 		|	  <a href="serialportlib/src/main/java/android_serialport_api/PARITY.java">奇偶校验，默认 NONE	 	</a>	|
+| flowCon 		|		<a href="serialportlib/src/main/java/android_serialport_api/FLOWCON.java">流控，默认 NONE	 	</a>	|
+| flags 		|	打开串口标志位，默认 0	|
 | protocolHead 	|   协议开头		|
 | protocolEnd 	|   协议结尾 	|
 | protocolLength 			|   协议长度 	|
@@ -275,17 +320,43 @@ parameter.setDebug(true);
 | onSerialPortDataListener 			|   数据监听 |
 | PROTOCOLMODEL_FIXED 			|   固定长度协议,  proLenIndex就没有意义了 |
 | PROTOCOLMODEL_VARIABLE 			|   可变长度协议,  proLenIndex才有意义		|
+| PROTOCOLMODEL_NONE 			|   无协议		|
 
 
 
+
+
+<br></br>
+<br></br>
+
+
+联系方式
+---------
+
+
+
+
+* Email: jiantaoqu@gmail.com
+* QQ: 490787193（添加的时候请注明是GitHub）
+<br></br><br></br>
+
+如果你觉得不错，对你有帮助，欢迎点个star，follow，也可以帮忙分享给你更多的朋友，或请我喝杯咖啡，这是给我们最大的动力与支持。有问题或建议可以给我邮件 
+---------
+
+
+* 扶贫方式
+<br></br>
+<img src="img/imgwechat.jpg" width="360">
+
+<br></br>
 
 效果演示
 ---------
-* 并发处理
-<br></br>
-<img src="img/img1.gif" width="720"> 
-<br></br>
-<img src="img/img5.JPG" width="360">  
+* 并发粘包分包处理
+  <br></br>
+  <img src="img/img1.gif" width="720">
+  <br></br>
+  <img src="img/img5.JPG" width="360">
 
 项目成品
 ---------
@@ -293,13 +364,13 @@ parameter.setDebug(true);
 <br></br>
 网红口红机
 <br></br>
-<img src="img/img6.JPG" width="360"> 
+<img src="img/img6.JPG" width="360">
 
 [云际科技-游云魔盒](http://www.baidu.com)
 <br></br>
 一种游艺设备，支持使用摇杆玩王者荣耀，和各种cocos2d,unity3d游戏。
 <br></br>
-<img src="img/img7.JPG" width="360"> 
+<img src="img/img7.JPG" width="360">
 
 [逗买科技-逗买智能售货机](http://www.ecxls.cn/invest.html)
 <br></br>

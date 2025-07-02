@@ -11,9 +11,16 @@ public class ByteUtils {
         //System.out.println(bytesToLong(new byte[]{-57,-78,-20,1,0,0,0,0}));
     }
 
+    /**
+     * 将Byte列表转换为字节数组
+     *
+     * @param list Byte列表
+     * @return 对应的字节数组，如果列表为空或大小小于0，则返回null
+     */
     public static byte[] listTobyte(List<Byte> list) {
-        if (list == null || list.size() < 0)
+        if (list == null || list.size() < 0) {
             return null;
+        }
         byte[] bytes = new byte[list.size()];
         int i = 0;
         Iterator<Byte> iterator = list.iterator();
@@ -24,7 +31,12 @@ public class ByteUtils {
         return bytes;
     }
 
-
+    /**
+     * 将int值转换为4字节的字节数组
+     *
+     * @param intValue int值
+     * @return 4字节的字节数组
+     */
     public static byte[] intTo4Byte(int intValue) {
         byte[] result = new byte[4];
         result[0] = (byte) ((intValue & 0xFF000000) >> 24);
@@ -35,7 +47,10 @@ public class ByteUtils {
     }
 
     /**
-     * 低位在前，高位在后
+     * 将int值转换为2字节的字节数组，低位在前，高位在后
+     *
+     * @param intValue int值
+     * @return 2字节的字节数组
      */
     public static byte[] intTo2ByteLH(int intValue) {
         byte[] result = new byte[2];
@@ -44,6 +59,12 @@ public class ByteUtils {
         return result;
     }
 
+    /**
+     * 将int值转换为3字节的字节数组
+     *
+     * @param intValue int值
+     * @return 3字节的字节数组
+     */
     public static byte[] intTo3Byte(int intValue) {
         byte[] result = new byte[3];
         result[0] = (byte) ((intValue & 0x00FF0000) >> 16);
@@ -52,6 +73,13 @@ public class ByteUtils {
         return result;
     }
 
+
+    /**
+     * 将字节数组转换为十六进制字符串
+     *
+     * @param src 字节数组
+     * @return 十六进制字符串，如果输入为空或长度为0，则返回null
+     */
     public static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder("");
         if (src == null || src.length <= 0) {
@@ -68,6 +96,12 @@ public class ByteUtils {
         return stringBuilder.toString();
     }
 
+    /**
+     * 将字节数组转换为int值
+     *
+     * @param bytes 字节数组
+     * @return 转换后的int值
+     */
     public static int bytesToInt(byte[] bytes) {
         switch (bytes.length) {
             case 4:
@@ -84,6 +118,12 @@ public class ByteUtils {
         }
     }
 
+    /**
+     * 将字节数组转换为long值
+     *
+     * @param bytes 字节数组
+     * @return 转换后的long值
+     */
     public static long bytesToLong(byte[] bytes) {
         switch (bytes.length) {
             case 8:
@@ -110,6 +150,12 @@ public class ByteUtils {
         }
     }
 
+    /**
+     * 将4字节的字节数组转换为int值
+     *
+     * @param bytes 4字节的字节数组
+     * @return 转换后的int值
+     */
     public static int bytes4Toint(byte[] bytes) {
         int in2 = ((bytes[0] << 24) & 0xFF000000)
                 | ((bytes[1] << 16) & 0x00FF0000)
@@ -117,20 +163,46 @@ public class ByteUtils {
         return in2;
     }
 
+    /**
+     * 将两个字节转换为int值
+     *
+     * @param a 第一个字节
+     * @param b 第二个字节
+     * @return 转换后的int值
+     */
     public static int bytes2Toint(byte a, byte b) {
         int in2 = ((a << 8) & 0xFF00) | (b & 0x000FF);
         return in2;
     }
 
+
+    /**
+     * 将2字节的字节数组转换为int值
+     *
+     * @param bytes 2字节的字节数组
+     * @return 转换后的int值
+     */
     public static int bytes2Toint(byte[] bytes) {
         int in2 = ((bytes[0] << 8) & 0x0000FF00) | (bytes[1] & 0x000000FF);
         return in2;
     }
 
+    /**
+     * 将2字节的字节数组转换为short值
+     *
+     * @param bytes 2字节的字节数组
+     * @return 转换后的short值
+     */
     public static short bytesToShort(byte[] bytes) {
         return (short) (bytes[1] & 0xff | (bytes[0] & 0xff) << 8);
     }
 
+    /**
+     * 将short值转换为2字节的字节数组
+     *
+     * @param shortValue short值
+     * @return 2字节的字节数组
+     */
     public static byte[] shortToByte(short shortValue) {
         byte[] result = new byte[2];
         result[0] = (byte) ((shortValue & 0xFF00) >> 8);
@@ -138,6 +210,14 @@ public class ByteUtils {
         return result;
     }
 
+    /**
+     * 将short值复制到long值的字节数组中
+     *
+     * @param toLong    目标字节数组
+     * @param fromShort 源字节数组
+     * @param offset    偏移量
+     * @return 复制后的长度
+     */
     public static int copyShort2Long(byte[] toLong, byte[] fromShort, int offset) {
         for (int i = 0; i < fromShort.length; i++) {
             toLong[i + offset] = fromShort[i];
@@ -145,6 +225,14 @@ public class ByteUtils {
         return fromShort.length + offset;
     }
 
+    /**
+     * 将long值复制到short值的字节数组中
+     *
+     * @param toShort  目标字节数组
+     * @param fromLong 源字节数组
+     * @param offset   偏移量
+     * @return 复制后的长度
+     */
     public static int copyLong2Short(byte[] toShort, byte[] fromLong, int offset) {
         for (int i = 0; i < toShort.length; i++) {
             toShort[i] = fromLong[i + offset];
@@ -153,10 +241,10 @@ public class ByteUtils {
     }
 
     /**
-     * 4字节整型 yymmddhh
+     * 将4字节整型转换为Date对象，格式为yymmddhh
      *
-     * @param piece
-     * @return
+     * @param piece 4字节整型的字节数组
+     * @return 对应的Date对象
      */
     public static Date bytesToDateH(byte[] piece) {
         int intValue = bytesToInt(piece);
@@ -172,10 +260,10 @@ public class ByteUtils {
     }
 
     /**
-     * 4字节整型 yymmddhhmm
+     * 将4字节整型转换为Date对象，格式为yymmddhhmm
      *
-     * @param piece
-     * @return
+     * @param piece 4字节整型的字节数组
+     * @return 对应的Date对象
      */
     public static Date bytesToDateM(byte[] piece) {
         int intValue = bytesToInt(piece);
@@ -191,6 +279,12 @@ public class ByteUtils {
         return calendar.getTime();
     }
 
+    /**
+     * 将shortOne数组的每个元素与longOne数组的对应位置元素进行比较，如果longOne的对应位置没有元素，则将shortOne的该位置元素置为0
+     *
+     * @param shortOne 较短的数组
+     * @param longOne  较长的数组
+     */
     public static void cutIn(byte[] shortOne, byte[] longOne) {
         for (int i = 0; i < shortOne.length; i++) {
             if (longOne.length - shortOne.length + i < 0) {
@@ -201,6 +295,12 @@ public class ByteUtils {
         }
     }
 
+    /**
+     * 将shortOne数组的每个元素与longOne数组的对应位置元素进行比较，如果longOne的对应位置没有元素，则将shortOne的该位置元素置为0
+     *
+     * @param shortOne 较短的数组
+     * @param longOne  较长的数组
+     */
     public static void cutStr(byte[] shortOne, byte[] longOne) {
         for (int i = 0; i < shortOne.length; i++) {
             if (i > longOne.length - 1) {
@@ -211,6 +311,12 @@ public class ByteUtils {
         }
     }
 
+    /**
+     * 将日期转换为自定义格式的字节数组
+     *
+     * @param date 日期对象
+     * @return 表示日期的字节数组
+     */
     public static byte[] dateMToBytes(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -223,6 +329,12 @@ public class ByteUtils {
         return intTo4Byte(timestamp);
     }
 
+    /**
+     * 将日期转换为自定义格式的字节数组
+     *
+     * @param date 日期对象
+     * @return 表示日期的字节数组
+     */
     public static byte[] dateHToBytes(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -234,6 +346,12 @@ public class ByteUtils {
         return intTo4Byte(timestamp);
     }
 
+    /**
+     * 将长整型数值转换为8字节的字节数组
+     *
+     * @param longValue 长整型数值
+     * @return 表示长整型数值的字节数组
+     */
     public static byte[] longToByte(long longValue) {
         byte[] result = new byte[8];
 
@@ -245,6 +363,11 @@ public class ByteUtils {
         return result;
     }
 
+    /**
+     * 反转字节数组的元素顺序
+     *
+     * @param bytes 待反转的字节数组
+     */
     public static void reverse(byte[] bytes) {
         if (null == bytes) {
             return;
@@ -261,10 +384,22 @@ public class ByteUtils {
         }
     }
 
+    /**
+     * 将字节数组转换为C字符串格式，即在末尾添加空字节
+     *
+     * @param bytes 待转换的字节数组
+     * @return 转换后的字节数组
+     */
     public static byte[] toCString(byte[] bytes) {
         return toCString(bytes, 1);
     }
 
+    /**
+     * 使用自定义密钥对数据进行异或加密
+     *
+     * @param data 待加密的数据
+     * @return 加密后的数据
+     */
     public static byte[] FmEncryption(byte[] data) {
         byte[] cods = new byte[]{0x36, 0x08, (byte) 0xf6, 0x13, (byte) 0xe2,
                 0x0D, 0x47, (byte) 0xA0};
@@ -274,12 +409,19 @@ public class ByteUtils {
 
             data[i] ^= cods[codsi];
             codsi++;
-            if (codsi >= cods.length)
+            if (codsi >= cods.length) {
                 codsi = 0;
+            }
         }
         return data;
     }
 
+    /**
+     * 使用自定义密钥对数据进行异或加密
+     *
+     * @param data 待加密的数据
+     * @return 加密后的数据
+     */
     public static byte[] encrypt(byte[] data) {
         byte[] cods = new byte[]{98, 100, 52, 97, 99, 49, 48, 51, 54, 99,
                 102, 98, 51, 56, 55, 101, 49, 52, 49, 52, 50, 49, 51, 48, 49,
@@ -290,12 +432,20 @@ public class ByteUtils {
 
             data[i] ^= cods[codsi];
             codsi++;
-            if (codsi >= cods.length)
+            if (codsi >= cods.length) {
                 codsi = 0;
+            }
         }
         return data;
     }
 
+    /**
+     * 计算字节数组中所有字节的累加和
+     *
+     * @param data   待计算累加和的字节数组
+     * @param offset 累加和计算的起始位置
+     * @return 字节数组的累加和
+     */
     public static int bytesSum(byte[] data, int offset) {
         // 等价于无符号整型累加
         int s = 0;
@@ -308,6 +458,12 @@ public class ByteUtils {
     private static final char[] HEX_CHAR = new char[]{'0', '1', '2', '3',
             '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
+    /**
+     * 将字节数组转换为十六进制字符串表示形式
+     *
+     * @param buffer 待转换的字节数组
+     * @return 字节数组的十六进制字符串表示
+     */
     public static final String dumpBytes(byte[] buffer) {
         if (buffer == null) {
             return "";
@@ -330,6 +486,12 @@ public class ByteUtils {
         return sb.toString();
     }
 
+    /**
+     * 从字节数组中提取字符串部分，遇到两个连续的空字节时停止
+     *
+     * @param bytes 待提取的字节数组
+     * @return 提取的字符串部分的字节数组
+     */
     public static byte[] getStringBytes(byte[] bytes) {
         int len = 0;
         for (int j = 0; j < bytes.length; j += 2) {
@@ -343,6 +505,14 @@ public class ByteUtils {
         return piece;
     }
 
+    /**
+     * 将字节数组填充到指定长度，根据位置参数决定填充的位置
+     *
+     * @param bytes    待填充的字节数组
+     * @param len      目标长度
+     * @param position 填充位置，-1表示在末尾填充，其他值表示在开头填充
+     * @return 填充后的字节数组
+     */
     public static byte[] fillIn(byte[] bytes, int len, int position) {
         if (bytes.length > len) {
             return null;
@@ -359,6 +529,13 @@ public class ByteUtils {
         }
     }
 
+    /**
+     * 从字节数组中截取指定长度的部分
+     *
+     * @param len       截取的长度
+     * @param intToByte 待截取的字节数组
+     * @return 截取后的字节数组
+     */
     public static byte[] cutInt(int len, byte[] intToByte) {
         if (len > intToByte.length) {
             return null;
@@ -369,22 +546,42 @@ public class ByteUtils {
         }
     }
 
+    /**
+     * 将字节数组转换为C字符串格式，即在末尾添加指定数量的空字节
+     *
+     * @param bytes 待转换的字节数组
+     * @param i     添加的空字节数量
+     * @return 转换后的字节数组
+     */
     public static byte[] toCString(byte[] bytes, int i) {
         byte[] newBytes = new byte[bytes.length + i];
         ByteUtils.copyShort2Long(newBytes, bytes, 0);
         return newBytes;
     }
 
+    /**
+     * 反转字节数组的元素顺序
+     *
+     * @param intToByte 待反转的字节数组
+     * @return 反转后的字节数组
+     */
     public static byte[] getReverse(byte[] intToByte) {
         reverse(intToByte);
         return intToByte;
     }
 
+    /**
+     * 使用FNV哈希算法计算字节数组的哈希值
+     *
+     * @param data 待计算哈希值的字节数组
+     * @return 字节数组的哈希值
+     */
     public static int FNVHash1(byte[] data) {
         final int p = 16777619;
         int hash = (int) 2166136261L;
-        for (byte b : data)
+        for (byte b : data) {
             hash = (hash ^ b) * p;
+        }
         hash += hash << 13;
         hash ^= hash >> 7;
         hash += hash << 3;
@@ -398,6 +595,7 @@ public class ByteUtils {
      * 异或计算产生校验码
      *
      * @param datas 需要校验的数据
+     * @param len   数据长度
      * @return 校验码
      */
     public static byte getXor(byte[] datas, int len) {
@@ -411,27 +609,52 @@ public class ByteUtils {
         return temp;
     }
 
+    /**
+     * 将十进制数字转换为十六进制数字
+     *
+     * @param decimal 十进制数字
+     * @return 十六进制表示的数字
+     */
     public static int decimalToHex(int decimal) {
         return Integer.parseInt(decimalToHexString(decimal));
     }
 
-    //十进制转16进制
+
+    /**
+     * 将十进制数转换为十六进制字符串
+     * 此方法不使用内置的转换函数，而是通过数学计算和字符映射来实现转换
+     *
+     * @param decimal 十进制数
+     * @return 对应的十六进制字符串
+     */
     public static String decimalToHexString(int decimal) {
+        // 初始化十六进制字符串变量
         String hex = "";
+        // 当十进制数不等于0时，继续转换
         while (decimal != 0) {
+            // 获取当前十进制数除以16的余数，用于转换为十六进制字符
             int hexValue = decimal % 16;
+            // 将余数转换为十六进制字符，并添加到十六进制字符串的开头
             hex = toHexChar(hexValue) + hex;
+            // 十进制数除以16，为下一轮迭代做准备
             decimal = decimal / 16;
         }
+        // 返回转换后的十六进制字符串
         return hex;
     }
 
-    //将0~15的十进制数转换成0~F的十六进制数
+    /**
+     * 将十六进制数字转换为字符
+     *
+     * @param hexValue 十六进制数字
+     * @return 对应的字符
+     */
     public static char toHexChar(int hexValue) {
-        if (hexValue <= 9 && hexValue >= 0)
+        if (hexValue <= 9 && hexValue >= 0) {
             return (char) (hexValue + '0');
-        else
+        } else {
             return (char) (hexValue - 10 + 'A');
+        }
     }
 
 
