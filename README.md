@@ -45,7 +45,7 @@ dependencies {
 allprojects {
 		repositories {
 			...
-            mavenCentral()
+			mavenCentral()
 			maven { url 'https://jitpack.io' }
 		}
 	}
