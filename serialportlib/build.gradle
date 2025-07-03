@@ -82,10 +82,14 @@ task sourcesJar(type: Jar) {
 }
 
 
+
+
 afterEvaluate {
     publishing {
         publications {
-            release(MavenPublication) {
+            release(MavenPublication)
+            noSignPublication(MavenPublication){
+//            release(MavenPublication) {
 //                from components.release
 //                from components.java
 
@@ -161,4 +165,11 @@ afterEvaluate {
 //    }
 }
 
+
+// 禁用 signReleasePublication 任务（强制屏蔽）
+//tasks.whenTaskAdded { task ->
+//    if (task.name == 'signReleasePublication') {
+//        task.enabled = false
+//    }
+//}
 
