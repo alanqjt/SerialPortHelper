@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'maven-publish'
-    id 'signing'
+//    id 'signing'
 //    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'org.jetbrains.dokka'
 //    id 'maven-central-publish'
@@ -156,9 +156,9 @@ afterEvaluate {
 //        }
     }
 
-    signing {
-        sign publishing.publications.release
-    }
+//    signing {
+//        sign publishing.publications.release
+//    }
 }
 
 
