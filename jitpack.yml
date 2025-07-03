@@ -1,0 +1,14 @@
+jdk:
+  - openjdk17
+
+android:
+  build-tools: 34.0.0
+
+install:
+  - ./gradlew :serialportlib:assembleRelease :serialportlib:publishReleasePublicationToMavenLocal
+
+artifacts:
+  - path: serialportlib/build/outputs/aar/serialportlib-release.aar
+    type: aar
+  - path: serialportlib/build/publications/release/pom-default.xml
+    type: pom
