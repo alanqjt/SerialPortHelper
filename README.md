@@ -5,7 +5,7 @@ SerialPortHelper
 [![](https://img.shields.io/badge/SerialPort-v3.0.0-brightgreen.svg)](https://github.com/cepr/android-serialport-api)
 [![](https://jitpack.io/v/alanqjt/SerialPortHelper.svg)](https://jitpack.io/#alanqjt/SerialPortHelper)
 ![](https://travis-ci.org/CymChad/BaseRecyclerViewAdapterHelper.svg?branch=master)
-[![API](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
+[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 
 
 更新日志v3.0
