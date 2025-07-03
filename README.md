@@ -2,13 +2,13 @@ SerialPortHelper
 ========
 
 
-[![](https://img.shields.io/badge/SerialPort-2.0.0-brightgreen.svg)](https://github.com/cepr/android-serialport-api)
+[![](https://img.shields.io/badge/SerialPort-v3.0.0-brightgreen.svg)](https://github.com/cepr/android-serialport-api)
 [![](https://jitpack.io/v/alanqjt/SerialPortHelper.svg)](https://jitpack.io/#alanqjt/SerialPortHelper)
 ![](https://travis-ci.org/CymChad/BaseRecyclerViewAdapterHelper.svg?branch=master)
 [![API](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 
 
-更新日志v2.0
+更新日志v3.0
 ---------
 * 取消单例模式，支持同时打开多个串口
 * 以建造者模式创建Parameter
@@ -45,6 +45,7 @@ dependencies {
 allprojects {
 		repositories {
 			...
+            mavenCentral()
 			maven { url 'https://jitpack.io' }
 		}
 	}
@@ -52,7 +53,7 @@ allprojects {
 
 ```xml
 dependencies {
-     implementation 'com.github.alanqjt:SerialPortHelper:v1.0.2'
+     implementation 'com.github.alanqjt:SerialPortHelper:v3.0.0'
 }
 ```
 
