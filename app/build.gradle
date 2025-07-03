@@ -30,8 +30,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(path: ':serialportlib')
-//    implementation 'io.github.alanqjt:SerialPortHelper:2.0.0-SNAPSHOT'
+//    implementation project(path: ':serialportlib')
+    implementation 'com.github.alanqjt:SerialPortHelper:v2.0.0'
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.10.0'

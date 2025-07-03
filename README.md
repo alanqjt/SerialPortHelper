@@ -8,18 +8,13 @@ SerialPortHelper
 [![API](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 
 
-2.0版本由于在迁移到maven过程中，Android studio 的 maven-publish 上传一直失败 401， 而使用 maven-central-publish 又会报 Plugin [id: 'maven-central-publish'] was not found in any of the following sources    还在研究中，大伙有解决方法也可以私聊告诉我，[联系方式](#联系方式)，如果想要使用新版的可以将[serialportlib](serialportlib)引入的方式使用。
----------
-
-
-
 更新日志v2.0
 ---------
 * 取消单例模式，支持同时打开多个串口
 * 以建造者模式创建Parameter
 * so以Cmake动态生成，新增支持设置停止位，校验位，数据位...等等扩展参数
 * 新增无协议的串口读写（协议逻辑要自己处理）
-* 修改为maven依赖
+
 
 
 

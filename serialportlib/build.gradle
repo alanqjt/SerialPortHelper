@@ -1,10 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'maven-publish'
-//    id 'signing'
-//    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'org.jetbrains.dokka'
-//    id 'maven-central-publish'
 }
 
 android {
@@ -49,31 +46,7 @@ android {
 
 }
 
-dependencies {
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
-}
-
-
-
-
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            release(MavenPublication) {
-//                from components.release
-//
-//                // JitPack 要求：groupId 必须为 com.github.<你的 GitHub 用户名>
-//                groupId = 'com.github.alanqjt'
-//                artifactId = 'SerialPortHelper'
-//                version = '2.0.0' // 实际上 JitPack 会使用 Git Tag，这里写什么都可以
-//
-//                // 可选：如果有源码/文档 Jar，可以配置
-//                // artifact sourcesJar
-//                // artifact javadocJar
-//            }
-//        }
-//    }
-//}
+dependencies {}
 
 
 task sourcesJar(type: Jar) {
@@ -82,39 +55,22 @@ task sourcesJar(type: Jar) {
 }
 
 
-
-
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication)
-            noSignPublication(MavenPublication){
-//            release(MavenPublication) {
-//                from components.release
-//                from components.java
-
-
-//                groupId = GROUP_ID
-//                artifactId = ARTIFACT_ID
-//                version = VERSION_BASE_SDK_NAME_MAVEN
+            noSignPublication(MavenPublication) {
 
                 groupId = 'com.github.alanqjt'
                 artifactId = 'SerialPortHelper'
                 version = '2.0.0' // 实际上 JitPack 会使用 Git Tag，这里写什么都可以
 
-
-//                groupId = 'io.github.alanqjt'
-//                artifactId = 'SerialPortHelper'
-//                version = '2.0.0-SNAPSHOT'
-
                 artifact("$buildDir/outputs/aar/${project.name}-release.aar") {
                     builtBy tasks.named("bundleReleaseAar") // 确保先打包
                 }
-//                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
                 artifact(sourcesJar) {
                     classifier "sources"
                 }
-
 
                 pom {
                     name = 'SerialPortHelper'
@@ -145,34 +101,9 @@ afterEvaluate {
             }
         }
 
-//        repositories {
-//            maven {
-//                //https://central.sonatype.org/publish/release/
-//                def releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-//                def snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-//                url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
-//
-//                credentials {
-////                    username = project.findProperty("ossrhUsername")
-////                    password = project.findProperty("ossrhPassword")
-//
-//                    username = project.findProperty("ossrhToken") as String
-//                    password = project.findProperty("ossrhTokenPassword") as String
-//                }
-//            }
-//        }
     }
 
-//    signing {
-//        sign publishing.publications.release
-//    }
 }
 
 
-// 禁用 signReleasePublication 任务（强制屏蔽）
-//tasks.whenTaskAdded { task ->
-//    if (task.name == 'signReleasePublication') {
-//        task.enabled = false
-//    }
-//}
 
