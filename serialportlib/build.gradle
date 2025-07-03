@@ -108,9 +108,9 @@ afterEvaluate {
 //                version = '2.0.0-SNAPSHOT'
 
                 artifact("$buildDir/outputs/aar/${project.name}-release.aar") {
-                    builtBy tasks.named("bundleReleaseAar")
+                    builtBy tasks.named("bundleReleaseAar") // 确保先打包
                 }
-                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+//                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
                 artifact(sourcesJar) {
                     classifier "sources"
                 }
