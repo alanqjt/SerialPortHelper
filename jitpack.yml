@@ -5,7 +5,7 @@ android:
   build-tools: 34.0.0
 
 install:
-  - ./gradlew :serialportlib:assembleRelease :serialportlib:publishReleasePublicationToMavenLocal
+  - ./gradlew :serialportlib:assembleRelease :serialportlib:publishToMavenLocal
 
 artifacts:
   - path: serialportlib/build/outputs/aar/serialportlib-release.aar

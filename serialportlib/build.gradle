@@ -53,63 +53,91 @@ dependencies {
 //    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-//task sourcesJar(type: Jar) {
-//    from android.sourceSets.main.java.srcDirs
-//    archiveClassifier.set('sources')
-//}
-//
-//
+
+
+
 //afterEvaluate {
 //    publishing {
 //        publications {
 //            release(MavenPublication) {
-////                from components.release
-////                from components.java
+//                from components.release
 //
+//                // JitPack 要求：groupId 必须为 com.github.<你的 GitHub 用户名>
+//                groupId = 'com.github.alanqjt'
+//                artifactId = 'SerialPortHelper'
+//                version = '2.0.0' // 实际上 JitPack 会使用 Git Tag，这里写什么都可以
 //
+//                // 可选：如果有源码/文档 Jar，可以配置
+//                // artifact sourcesJar
+//                // artifact javadocJar
+//            }
+//        }
+//    }
+//}
+
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set('sources')
+}
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+//                from components.release
+//                from components.java
+
+
 //                groupId = GROUP_ID
 //                artifactId = ARTIFACT_ID
 //                version = VERSION_BASE_SDK_NAME_MAVEN
-//
-////                groupId = 'io.github.alanqjt'
-////                artifactId = 'SerialPortHelper'
-////                version = '2.0.0-SNAPSHOT'
-//
-//                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-//                artifact(sourcesJar) {
-//                    classifier "sources"
-//                }
-//
-//
-//                pom {
-//                    name = 'SerialPortHelper'
-//                    description = 'A lightweight and simple Android serial port communication helper.'
-//                    url = 'https://github.com/alanqjt/SerialPortHelper'
-//
-//                    licenses {
-//                        license {
-//                            name = 'The Apache License, Version 2.0'
-//                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-//                        }
-//                    }
-//
-//                    developers {
-//                        developer {
-//                            id = '9616b897-ffe8-4fe0-92f2-ce76e05256d8'
-//                            name = 'AlanQu'
-//                            email = 'alanqjt@163.com'
-//                        }
-//                    }
-//
-//                    scm {
-//                        connection = 'scm:git:github.com/alanqjt/SerialPortHelper.git'
-//                        developerConnection = 'scm:git:ssh://github.com/alanqjt/SerialPortHelper.git'
-//                        url = 'https://github.com/alanqjt/SerialPortHelper'
-//                    }
-//                }
-//            }
-//        }
-//
+
+                groupId = 'com.github.alanqjt'
+                artifactId = 'SerialPortHelper'
+                version = '2.0.0' // 实际上 JitPack 会使用 Git Tag，这里写什么都可以
+
+
+//                groupId = 'io.github.alanqjt'
+//                artifactId = 'SerialPortHelper'
+//                version = '2.0.0-SNAPSHOT'
+
+                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+                artifact(sourcesJar) {
+                    classifier "sources"
+                }
+
+
+                pom {
+                    name = 'SerialPortHelper'
+                    description = 'A lightweight and simple Android serial port communication helper.'
+                    url = 'https://github.com/alanqjt/SerialPortHelper'
+
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = '9616b897-ffe8-4fe0-92f2-ce76e05256d8'
+                            name = 'AlanQu'
+                            email = 'alanqjt@163.com'
+                        }
+                    }
+
+                    scm {
+                        connection = 'scm:git:github.com/alanqjt/SerialPortHelper.git'
+                        developerConnection = 'scm:git:ssh://github.com/alanqjt/SerialPortHelper.git'
+                        url = 'https://github.com/alanqjt/SerialPortHelper'
+                    }
+                }
+            }
+        }
+
 //        repositories {
 //            maven {
 //                //https://central.sonatype.org/publish/release/
@@ -126,11 +154,11 @@ dependencies {
 //                }
 //            }
 //        }
-//    }
-//
-//    signing {
-//        sign publishing.publications.release
-//    }
-//}
+    }
+
+    signing {
+        sign publishing.publications.release
+    }
+}
 
 
