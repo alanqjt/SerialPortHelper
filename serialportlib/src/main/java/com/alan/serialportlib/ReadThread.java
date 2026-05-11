@@ -51,8 +51,12 @@ public class ReadThread extends Thread {
 
     public void stopDoing() {
         try {
-            service1.shutdownNow();
-            service2.shutdownNow();
+            if (service1 != null && !service1.isShutdown()) {
+                service1.shutdownNow();
+            }
+            if (service2 != null && !service2.isShutdown()) {
+                service2.shutdownNow();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

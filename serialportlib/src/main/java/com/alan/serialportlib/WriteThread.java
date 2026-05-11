@@ -38,7 +38,9 @@ public class WriteThread extends Thread {
 
     public void stopDoing() {
         try {
-            service1.shutdownNow();
+            if (service1 != null && !service1.isShutdown()) {
+                service1.shutdownNow();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
