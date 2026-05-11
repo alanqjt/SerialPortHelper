@@ -12,7 +12,7 @@ SerialPortHelper
 ---------
 
 v3.0.1
-* 修复无协议串口关闭出现空指针问题
+* 修复无协议出现空指针问题
 
 v3.0.0
 * 取消单例模式，支持同时打开多个串口
@@ -58,7 +58,7 @@ allprojects {
 
 ```xml
 dependencies {
-     implementation 'com.github.alanqjt:SerialPortHelper:v3.0.0'
+     implementation 'com.github.alanqjt:SerialPortHelper:v3.0.1'
 }
 ```
 
