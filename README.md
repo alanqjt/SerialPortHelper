@@ -8,6 +8,18 @@ SerialPortHelper
 [![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 
 
+更新日志v4.0
+---------
+v4.0.0
+* **修复 USB 转串口收不到数据的严重 bug**：native 层迁移到 `termios2` 时丢失了 raw 模式设置，导致串口停留在规范(canonical)模式——`read()` 只有收到换行符 `0x0A` 才返回，二进制流永远读不出来。现已补回 raw 模式，并显式开启接收器 `CLOCAL | CREAD`、设置 `VMIN=1/VTIME=0`
+* **新增 DTR/RTS 控制**：很多 USB 转串口芯片(CH340/PL2303/FTDI 等)会把 DTR/RTS 电平锁存到硬件，不少 RS232 外设需要这两根线被拉高才会收发。新增 `Builder.setDtr(boolean)` / `setRts(boolean)`，**默认打开串口后自动拉高两根线**(复现串口助手默认行为)
+* `serialStart` 打开失败不再让宿主 App 崩溃：原先只 `catch(IOException)`，未 root / 无权限时抛出的 `SecurityException` 会冒泡崩溃，现统一捕获并返回 `false`
+* `close()` 增加判空：`serialStart` 失败后调用 `close()` 不再 NPE
+* 发送队列满时改为丢弃并打日志(`offer`)，不再抛 `IllegalStateException` 拖垮调用方
+* 修复读线程 `removeList` 不清空导致的内存泄漏(固定/可变协议模式)
+* 修复写线程误用「读频率」字段，导致 `setFrequencyBySend()` 之前完全不生效
+* 修正 README 与代码不一致：监听回调方法名统一为 `onDataSend`；队列/间隔默认值更正为 16 / 1ms
+
 更新日志v3.0
 ---------
 
@@ -132,7 +144,7 @@ Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Paramete
     }
 
     @Override
-    public void onDataSent(byte[] bytes, int length, String hexData) {
+    public void onDataSend(byte[] bytes, int length, String hexData) {
                 
     }
 });
@@ -162,7 +174,7 @@ Parameter parameter = new Parameter(SERIALPATH, BAUDRATE, protocolHead, Paramete
     }
 
     @Override
-    public void onDataSent(byte[] bytes, int length, String hexData) {
+    public void onDataSend(byte[] bytes, int length, String hexData) {
                
     }
 });
@@ -229,10 +241,10 @@ Parameter parameter = new Parameter.Builder(SERIALPATH, BAUDRATE, protocolHead, 
 
 ```Java
 //发送数据队列长度
-parameter.setQueueSizeBySend(100);//默认缓存100
+parameter.setQueueSizeBySend(16);//默认缓存16
 
 //监听数据队列长度
-parameter.setQueueSizeByReceived(100);//默认缓存100
+parameter.setQueueSizeByReceived(16);//默认缓存16
 ```
 
 
@@ -240,10 +252,10 @@ parameter.setQueueSizeByReceived(100);//默认缓存100
 
 ```Java
 //发送数据间隔
-parameter.setFrequencyBySend(200);//默认间隔为200毫秒
+parameter.setFrequencyBySend(1);//默认间隔为1毫秒
 
 //监听数据间隔
-parameter.setFrequencyByReceived(200);//默认间隔为200毫秒
+parameter.setFrequencyByReceived(1);//默认间隔为1毫秒
 ```
 
 
@@ -252,6 +264,22 @@ parameter.setFrequencyByReceived(200);//默认间隔为200毫秒
 ```Java
 parameter.setSuPath("/system/xbin/su");
 ```
+
+
+
+* 设置 DTR / RTS（USB 转串口常用）
+
+很多 USB 转串口芯片(CH340/PL2303/FTDI 等)会把 DTR/RTS 电平锁存到硬件，不少 RS232 外设需要这两根线被拉高才会收发数据。
+库默认在打开串口后把两根线都拉高（与串口助手默认行为一致），如需关闭可显式设置：
+
+```Java
+Parameter parameter = new Parameter.Builder(SERIALPATH, BAUDRATE, null, Parameter.PROTOCOLMODEL_NONE, listener)
+        .setDtr(true)   // 打开串口后拉高 DTR，默认 true
+        .setRts(true)   // 打开串口后拉高 RTS，默认 true
+        .build();
+```
+
+> 板载 UART 没有 DTR/RTS 物理线，该设置不会生效也不影响使用。
 
 
 
@@ -309,16 +337,18 @@ parameter.setDebug(true);
 | parity 		|	  <a href="serialportlib/src/main/java/android_serialport_api/PARITY.java">奇偶校验，默认 NONE	 	</a>	|
 | flowCon 		|		<a href="serialportlib/src/main/java/android_serialport_api/FLOWCON.java">流控，默认 NONE	 	</a>	|
 | flags 		|	打开串口标志位，默认 0	|
+| dtr 		|	打开串口后是否拉高 DTR 线，默认 true	|
+| rts 		|	打开串口后是否拉高 RTS 线，默认 true	|
 | protocolHead 	|   协议开头		|
 | protocolEnd 	|   协议结尾 	|
 | protocolLength 			|   协议长度 	|
 | proLenIndex 				|   协议长度截取的下标 从0开始	|
 | protocolModel 			|   协议模型 	|
 | uselessLength 			|   无用的数据长度 	|
-| frequencyBySend 			|   写线程处理速度,  只能大于0 默认为200毫秒	|
-| frequencyByReceived 			|   读线程处理速度,  只能大于0 默认为200毫秒 |
-| queueSizeBySend 			|   写线程队列缓存长度, 只能大于0 默认为100	|
-| queueSizeByReceived 			|   读线程队列缓存长度, 只能大于0 默认为100	|
+| frequencyBySend 			|   写线程处理速度,  只能大于0 默认为1毫秒	|
+| frequencyByReceived 			|   读线程处理速度,  只能大于0 默认为1毫秒 |
+| queueSizeBySend 			|   写线程队列缓存长度, 只能大于0 默认为16	|
+| queueSizeByReceived 			|   读线程队列缓存长度, 只能大于0 默认为16	|
 | onSerialPortDataListener 			|   数据监听 |
 | PROTOCOLMODEL_FIXED 			|   固定长度协议,  proLenIndex就没有意义了 |
 | PROTOCOLMODEL_VARIABLE 			|   可变长度协议,  proLenIndex才有意义		|

@@ -39,6 +39,12 @@ public class SerialHelper {
 
         try {
             serialPort = new SerialPort(new File(parameter.getSerialPath()), parameter.getBaudrate(), parameter.getStopBit(), parameter.getDataBit(), parameter.getParity(), parameter.getFlowCon(), parameter.getFlags(), parameter.getSuPath());
+            // 拉高/拉低 DTR、RTS。USB 转串口芯片会把该状态锁存到硬件，
+            // 很多 RS232 外设需要这两根线被拉高才会收发数据；板载 UART 无此线，调用会失败属正常。
+            boolean modemOk = serialPort.setModemControl(parameter.isDtr(), parameter.isRts());
+            if (parameter.isDebug()) {
+                Log.d(TAG, "setModemControl dtr=" + parameter.isDtr() + " rts=" + parameter.isRts() + " result=" + modemOk);
+            }
             outputStream = serialPort.getOutputStream();
             inputStream = serialPort.getInputStream();
             writeThread = new WriteThread(parameter);
@@ -49,9 +55,11 @@ public class SerialHelper {
             readThread.start();
             writeThread.start();
             ready = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            ready = false;
+        } catch (Exception e) {
+            // 包含 IOException 以及无权限/未 root 时的 SecurityException，
+            // 串口打开失败只返回 false，不应让宿主 App 崩溃。
+            Log.e(TAG, "serialStart failed: " + parameter.getSerialPath(), e);
+            close();
             return false;
         }
         return true;
@@ -68,11 +76,18 @@ public class SerialHelper {
     }
 
     public void close() {
-        writeThread.stopDoing();
-        readThread.stopDoing();
-        serialPort.close();
-        writeThread = null;
-        readThread = null;
+        if (null != writeThread) {
+            writeThread.stopDoing();
+            writeThread = null;
+        }
+        if (null != readThread) {
+            readThread.stopDoing();
+            readThread = null;
+        }
+        if (null != serialPort) {
+            serialPort.close();
+            serialPort = null;
+        }
         ready = false;
     }
 

@@ -111,6 +111,34 @@ public class SerialPort {
      */
     private native static FileDescriptor open(String path, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags);
 
+    /**
+     * Assert/clear the DTR and RTS modem control lines via TIOCMSET.
+     * <p>
+     * Many USB-to-serial chips (CH340/PL2303/FTDI) latch these lines in hardware
+     * until power cycle, and a lot of RS232 peripherals only transmit when DTR/RTS
+     * are asserted. Board-side UARTs have no such lines and this call simply fails.
+     *
+     * @param dtr 1 = assert (high), 0 = clear (low), -1 = leave unchanged
+     * @param rts 1 = assert (high), 0 = clear (low), -1 = leave unchanged
+     * @return 0 on success, -1 on failure
+     */
+    private native int setDtrRts(int dtr, int rts);
+
+    /** Assert/clear both DTR and RTS at once. */
+    public boolean setModemControl(boolean dtr, boolean rts) {
+        return setDtrRts(dtr ? 1 : 0, rts ? 1 : 0) == 0;
+    }
+
+    /** Assert/clear DTR, leaving RTS unchanged. */
+    public boolean setDtr(boolean on) {
+        return setDtrRts(on ? 1 : 0, -1) == 0;
+    }
+
+    /** Assert/clear RTS, leaving DTR unchanged. */
+    public boolean setRts(boolean on) {
+        return setDtrRts(-1, on ? 1 : 0) == 0;
+    }
+
     public native void close();
 
     static {

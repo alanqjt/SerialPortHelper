@@ -197,6 +197,8 @@ public class ReadThread extends Thread {
             for (byte[] bb : removeList) {
                 queue.remove(bb);
             }
+            // 必须清空，否则该 list 会随每次成帧无限增长（内存泄漏 + 重复 remove）
+            removeList.clear();
         } catch (Exception e) {
             e.printStackTrace();
         }

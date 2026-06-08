@@ -30,6 +30,11 @@ public class Parameter {
     // 打开串口标志位，默认 0
     private final int flags;
 
+    // 打开串口后是否拉高 DTR 线，默认 true（很多 USB 转串口/RS232 需要）
+    private final boolean dtr;
+    // 打开串口后是否拉高 RTS 线，默认 true
+    private final boolean rts;
+
     // 协议开头
     private final List<Integer> protocolHead;
     // 协议结尾
@@ -76,6 +81,8 @@ public class Parameter {
         this.parity = builder.parity;
         this.flowCon = builder.flowCon;
         this.flags = builder.flags;
+        this.dtr = builder.dtr;
+        this.rts = builder.rts;
         this.protocolHead = builder.protocolHead;
         this.protocolEnd = builder.protocolEnd;
         this.protocolLength = builder.protocolLength;
@@ -120,6 +127,14 @@ public class Parameter {
 
     public int getFlags() {
         return flags;
+    }
+
+    public boolean isDtr() {
+        return dtr;
+    }
+
+    public boolean isRts() {
+        return rts;
     }
 
     public List<Integer> getProtocolHead() {
@@ -181,6 +196,8 @@ public class Parameter {
                 ", parity=" + parity +
                 ", flowCon=" + flowCon +
                 ", flags=" + flags +
+                ", dtr=" + dtr +
+                ", rts=" + rts +
                 ", protocolHead=" + protocolHead +
                 ", protocolEnd=" + protocolEnd +
                 ", protocolLength=" + protocolLength +
@@ -214,6 +231,8 @@ public class Parameter {
         private int parity = PARITY.NONE.getParity();
         private int flowCon = FLOWCON.NONE.getFlowCon();
         private int flags = 0;
+        private boolean dtr = true;
+        private boolean rts = true;
         private int protocolEnd;
         private int protocolLength;
         private int proLenIndex;
@@ -269,6 +288,18 @@ public class Parameter {
 
         public Builder setFlags(int flags) {
             this.flags = flags;
+            return this;
+        }
+
+        /** 打开串口后是否拉高 DTR 线，默认 true */
+        public Builder setDtr(boolean dtr) {
+            this.dtr = dtr;
+            return this;
+        }
+
+        /** 打开串口后是否拉高 RTS 线，默认 true */
+        public Builder setRts(boolean rts) {
+            this.rts = rts;
             return this;
         }
 

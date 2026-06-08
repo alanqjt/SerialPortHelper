@@ -29,7 +29,7 @@ public class WriteThread extends Thread {
         }
         queue = new LinkedBlockingQueue<>(size);
 
-        frequency = parameter.getFrequencyByReceived();
+        frequency = parameter.getFrequencyBySend();
         if (frequency <= 0) {
             frequency = 200;
         }
@@ -52,7 +52,10 @@ public class WriteThread extends Thread {
 
 
     protected void addToQueue(byte[] params) {
-        queue.add(params);
+        // 用 offer 而非 add：队列满时返回 false 丢弃，而不是抛 IllegalStateException 把调用方搞崩
+        if (!queue.offer(params)) {
+            Log.e("SerialHelperWriteThread", "send queue full, data dropped");
+        }
     }
 
     @Override

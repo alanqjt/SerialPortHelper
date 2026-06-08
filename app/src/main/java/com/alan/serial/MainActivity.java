@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity implements OnSerialPortDataL
 
     private TextView textSend;
     private TextView textReceived;
-    private static final String SERIALPATH = "/dev/ttyS6";
+//    private static final String SERIALPATH = "/dev/ttyS6";
+    private static final String SERIALPATH = "/dev/ttyUSB10";
     private static final int BAUDRATE = 9600;
 
     @Override

@@ -16,12 +16,21 @@
 
 //#include <termios.h>
 #include <asm/termios.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include <jni.h>
+
+/* Modem control line bits (in case headers don't expose them) */
+#ifndef TIOCM_DTR
+#define TIOCM_DTR 0x002
+#endif
+#ifndef TIOCM_RTS
+#define TIOCM_RTS 0x004
+#endif
 
 #include "SerialPort.h"
 
@@ -75,6 +84,21 @@ JNIEXPORT jobject JNICALL Java_android_1serialport_1api_SerialPort_open
         struct termios2 cfg;
 
         ioctl (fd, TCGETS2, &cfg);
+
+        /*
+         * Put the port into raw mode and enable the receiver.
+         * Without clearing ICANON the tty stays in canonical mode, where read()
+         * only returns after a newline (0x0A) — so binary streams never surface.
+         * CLOCAL|CREAD turn on the receiver and ignore modem-control for the line
+         * discipline. (The parity/flow-control blocks below re-add their own bits.)
+         */
+        cfg.c_lflag &= ~(ICANON | ECHO | ECHOE | ECHONL | ISIG | IEXTEN);
+        cfg.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON | IXOFF | IXANY);
+        cfg.c_oflag &= ~OPOST;
+        cfg.c_cflag |= (CLOCAL | CREAD);
+        cfg.c_cc[VMIN] = 1;
+        cfg.c_cc[VTIME] = 0;
+
         // Set baudrate
         cfg.c_cflag &= ~CBAUD;
         cfg.c_cflag |= BOTHER;
@@ -188,13 +212,8 @@ JNIEXPORT jobject JNICALL Java_android_1serialport_1api_SerialPort_open
     return mFileDescriptor;
 }
 
-/*
- * Class:     cedric_serial_SerialPort
- * Method:    close
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_android_1serialport_1api_SerialPort_close
-        (JNIEnv *env, jobject thiz) {
+/* Read the int descriptor out of the SerialPort.mFd field. */
+static int getDescriptor(JNIEnv *env, jobject thiz) {
     jclass SerialPortClass = (*env)->GetObjectClass(env, thiz);
     jclass FileDescriptorClass = (*env)->FindClass(env, "java/io/FileDescriptor");
 
@@ -202,7 +221,56 @@ JNIEXPORT void JNICALL Java_android_1serialport_1api_SerialPort_close
     jfieldID descriptorID = (*env)->GetFieldID(env, FileDescriptorClass, "descriptor", "I");
 
     jobject mFd = (*env)->GetObjectField(env, thiz, mFdID);
-    jint descriptor = (*env)->GetIntField(env, mFd, descriptorID);
+    return (*env)->GetIntField(env, mFd, descriptorID);
+}
+
+/*
+ * Class:     android_serialport_api_SerialPort
+ * Method:    setDtrRts
+ * Signature: (II)I
+ *
+ * Assert/clear the DTR and RTS modem control lines.
+ * Each argument: 1 = assert (logic high / "on"), 0 = clear, -1 = leave unchanged.
+ * Returns 0 on success, -1 on failure (e.g. board UART without modem lines).
+ */
+JNIEXPORT jint JNICALL Java_android_1serialport_1api_SerialPort_setDtrRts
+        (JNIEnv *env, jobject thiz, jint dtr, jint rts) {
+    int fd = getDescriptor(env, thiz);
+    int status;
+
+    if (ioctl(fd, TIOCMGET, &status) < 0) {
+        LOGE("TIOCMGET failed (fd = %d), port may have no modem lines", fd);
+        return -1;
+    }
+
+    if (dtr == 1) {
+        status |= TIOCM_DTR;
+    } else if (dtr == 0) {
+        status &= ~TIOCM_DTR;
+    }
+    if (rts == 1) {
+        status |= TIOCM_RTS;
+    } else if (rts == 0) {
+        status &= ~TIOCM_RTS;
+    }
+
+    if (ioctl(fd, TIOCMSET, &status) < 0) {
+        LOGE("TIOCMSET failed (fd = %d)", fd);
+        return -1;
+    }
+
+    LOGD("setDtrRts dtr=%d rts=%d -> status=0x%x", dtr, rts, status);
+    return 0;
+}
+
+/*
+ * Class:     cedric_serial_SerialPort
+ * Method:    close
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_android_1serialport_1api_SerialPort_close
+        (JNIEnv *env, jobject thiz) {
+    jint descriptor = getDescriptor(env, thiz);
 
     LOGD("close(fd = %d)", descriptor);
     close(descriptor);
